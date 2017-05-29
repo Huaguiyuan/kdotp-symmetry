@@ -9,6 +9,6 @@ install:
 
 # run tests
 script:
-    - mypy --ignore-missing-imports kdotp_symmetry
+    - mypy --ignore-missing-imports .
     - cd tests
     - py.test
