@@ -67,8 +67,7 @@ def monomial_basis(*degrees: int) -> List[sp.Expr]:
     """
     if any(p < 0 for p in degrees):
         raise ValueError('Degrees must be non-negative integers')
-    basis:
-        List[sp.Expr] = []
+    basis: List[sp.Expr] = []
     for d in sorted(degrees):
         monomial_tuples = combinations_with_replacement(K_VEC, d)
         basis.extend(

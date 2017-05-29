@@ -5,8 +5,10 @@ python:
 
 install:
     - pip install .
+    - pip install mypy
 
 # run tests
 script:
+    - mypy --ignore-missing-imports kdotp_symmetry
     - cd tests
     - py.test
