@@ -8,6 +8,7 @@
 import random
 import operator
 from functools import reduce
+from typing import List, Tuple, Callable
 from itertools import combinations_with_replacement
 
 import sympy as sp
@@ -16,17 +17,17 @@ from fsc.export import export
 K_VEC = sp.symbols('kx, ky, kz')
 
 def expr_to_vector(
-        expr,
-        basis,
+        expr: sp.Expr,
+        basis: List[sp.Expr],
         *,
         random_fct=lambda: random.randint(-100, 100)
-    ):
+    ) -> Tuple[sp.Expr]:
     dim = len(basis)
     # create random values for the coordinates and evaluate
     # both the basis functions and the expression to generate
     # the linear equation to be solved
-    A = []
-    b = []
+    A: List[List[sp.Expr]] = []
+    b: List[sp.Expr] = []
     for _ in range(2 * dim):
         if sp.Matrix(A).rank() >= len(basis):
             break
@@ -48,7 +49,7 @@ def expr_to_vector(
     return vec
 
 @export
-def monomial_basis(*degrees):
+def monomial_basis(*degrees: int) -> List[sp.Expr]:
     """
     Returns the product basis of (kx, ky, kz), with monomials of the given degrees.
 
@@ -63,7 +64,7 @@ def monomial_basis(*degrees):
     """
     if any(p < 0 for p in degrees):
         raise ValueError('Degrees must be non-negative integers')
-    basis = []
+    basis: List[sp.Expr] = []
     for d in sorted(degrees):
         monomial_tuples = combinations_with_replacement(K_VEC, d)
         basis.extend(
@@ -72,7 +73,7 @@ def monomial_basis(*degrees):
         )
     return basis
 
-def matrix_to_expr_operator(matrix_form, repr_has_cc=False):
+def matrix_to_expr_operator(matrix_form: sp.Matrix, repr_has_cc: bool=False) -> Callable[[sp.Expr], sp.Expr]:
     """Returns a function that operates on expression, corresponding to the given ``matrix_form`` which operates on a vector in real space. ``repr_has_cc`` determines whether the symmetry contains time reversal."""
     # k-form and r-form of the matrix are related by A -> A^-1^T
     # => matrix^T gives g^-1 in k-space coordinates
