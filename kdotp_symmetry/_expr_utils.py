@@ -16,12 +16,13 @@ from fsc.export import export
 
 K_VEC = sp.symbols('kx, ky, kz')
 
+
 def expr_to_vector(
-        expr: sp.Expr,
-        basis: List[sp.Expr],
-        *,
-        random_fct=lambda: random.randint(-100, 100)
-    ) -> Tuple[sp.Expr]:
+    expr: sp.Expr,
+    basis: List[sp.Expr],
+    *,
+    random_fct=lambda: random.randint(-100, 100)
+) -> Tuple[sp.Expr]:
     dim = len(basis)
     # create random values for the coordinates and evaluate
     # both the basis functions and the expression to generate
@@ -37,7 +38,8 @@ def expr_to_vector(
     else:
         # this could happen if the random_fct is bad, or the 'basis' is not
         # linearly independent
-        raise ValueError('Could not find a sufficient number of linearly independent vectors')
+        raise ValueError(
+            'Could not find a sufficient number of linearly independent vectors')
 
     res = sp.linsolve((sp.Matrix(A), sp.Matrix(b)), sp.symbols('a b c'))
     if len(res) != 1:
@@ -47,6 +49,7 @@ def expr_to_vector(
     # check consistency
     assert expr.equals(sum(v * b for v, b in zip(vec, basis)))
     return vec
+
 
 @export
 def monomial_basis(*degrees: int) -> List[sp.Expr]:
@@ -64,7 +67,8 @@ def monomial_basis(*degrees: int) -> List[sp.Expr]:
     """
     if any(p < 0 for p in degrees):
         raise ValueError('Degrees must be non-negative integers')
-    basis: List[sp.Expr] = []
+    basis:
+        List[sp.Expr] = []
     for d in sorted(degrees):
         monomial_tuples = combinations_with_replacement(K_VEC, d)
         basis.extend(
@@ -72,6 +76,7 @@ def monomial_basis(*degrees: int) -> List[sp.Expr]:
             for m in monomial_tuples
         )
     return basis
+
 
 def matrix_to_expr_operator(matrix_form: sp.Matrix, repr_has_cc: bool=False) -> Callable[[sp.Expr], sp.Expr]:
     """Returns a function that operates on expression, corresponding to the given ``matrix_form`` which operates on a vector in real space. ``repr_has_cc`` determines whether the symmetry contains time reversal."""
@@ -82,6 +87,7 @@ def matrix_to_expr_operator(matrix_form: sp.Matrix, repr_has_cc: bool=False) -> 
     if repr_has_cc:
         k_matrix_form *= -1
     substitution = list(zip(K_VEC, k_matrix_form @ sp.Matrix(K_VEC)))
+
     def operator(expr):
         return expr.subs(substitution, simultaneous=True)
     return operator
