@@ -9,6 +9,6 @@ install:
 
 # run tests
 script:
-    - ./run_mypy.sh
+    - bash run_mypy.sh
     - cd tests
     - py.test
